@@ -1,0 +1,26 @@
+<div class="register-page">
+  <h2>Alătură-te echipei TSG</h2>
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label>Prenume:</label>
+      <input type="text" formControlName="firstName">
+    </div>
+
+    <div class="form-group">
+      <label>Nume:</label>
+      <input type="text" formControlName="lastName">
+    </div>
+
+    <div class="form-group">
+      <label>Email:</label>
+      <input type="email" formControlName="email">
+    </div>
+
+    <div class="form-group">
+      <label>Telefon:</label>
+      <input type="tel" formControlName="phoneNumber">
+    </div>
+
+    <button type="submit" [disabled]="!registerForm.valid">Trimite Cererea</button>
+  </form>
+</div>
