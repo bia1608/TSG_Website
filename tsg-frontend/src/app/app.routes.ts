@@ -41,13 +41,13 @@ export const routes: Routes = [
     path: 'dashboard',
     canActivate: [authGuard],  // ← trebuie să fii logat
     loadComponent: () =>
-      import('./dashboard/dashboard.component').then(m => m.DashboardComponent)
+      import('./dashboard/dashboard').then(m => m.DashboardComponent)
   },
   {
     path: 'admin',
     canActivate: [adminGuard], // ← trebuie să fii admin
     loadComponent: () =>
-      import('./admin/admin.component').then(m => m.AdminComponent)
+      import('./admin/admin').then(m => m.AdminComponent)
   },
   {
     path: '**',
