@@ -1,1 +1,28 @@
-/* You can add global styles to this file, and also import other style files */
+/* Reset global */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: #0f0f1a;
+  color: #e2e8f0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+  padding-top: 64px; /* offset pentru navbar fixed */
+}
+
+a {
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+}

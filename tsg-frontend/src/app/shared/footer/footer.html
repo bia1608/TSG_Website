@@ -1,1 +1,30 @@
-<p>footer works!</p>
+<footer class="footer">
+  <div class="footer-container">
+
+    <div class="footer-brand">
+      <span class="logo">TSG</span>
+      <p>Universitatea Transilvania din Brașov</p>
+    </div>
+
+    <div class="footer-links">
+      <h4>Navigare</h4>
+      <a routerLink="/">Acasă</a>
+      <a routerLink="/about">Despre</a>
+      <a routerLink="/blog">Blog</a>
+      <a routerLink="/register">Înregistrare</a>
+      <a routerLink="/contact">Contact</a>
+    </div>
+
+    <div class="footer-links">
+      <h4>Cont</h4>
+      <a routerLink="/login">Login</a>
+      <a routerLink="/dashboard">Profil</a>
+    </div>
+
+  </div>
+
+  <!-- {{ year }} = interpolation, afișează valoarea variabilei -->
+  <div class="footer-bottom">
+    <p>© {{ year }} TSG </p>
+  </div>
+</footer>

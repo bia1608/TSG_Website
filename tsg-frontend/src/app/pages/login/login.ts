@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth';
@@ -26,8 +26,8 @@ export class LoginComponent {
     });
   }
 
-  get email() { return this.form.get('email'); } //getter
-  get password() { return this.form.get('password'); } //getter
+  get email() { return this.form.get('email')!; } //getter
+  get password() { return this.form.get('password')!; } //getter
 
   onSubmit() {
     if (this.form.invalid) {
@@ -37,7 +37,7 @@ export class LoginComponent {
     this.error = '';
 
 
-    this.auth.login(this.email.value, this.password.value).subscribe({
+    this.auth.login(this.email!.value, this.password!.value).subscribe({
       next: (res) => {
         if (res.role === 'Admin') {
           this.router.navigate(['/admin']);

@@ -13,16 +13,6 @@ export const routes: Routes = [
       import('./pages/home/home').then(m => m.HomeComponent)
   },
   {
-    path: 'login',
-    loadComponent: () =>
-      import('./pages/login/login').then(m => m.LoginComponent)
-  },
-  {
-    path: 'register',
-    loadComponent: () =>
-      import('./pages/register/register').then(m => m.RegisterComponent)
-  },
-  {
     path: 'blog',
     loadComponent: () =>
       import('./pages/blog/blog').then(m => m.BlogComponent)
@@ -37,12 +27,25 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/contact/contact').then(m => m.ContactComponent)
   },
+
   {
     path: 'dashboard',
     canActivate: [authGuard],  // ← trebuie să fii logat
     loadComponent: () =>
       import('./dashboard/dashboard').then(m => m.DashboardComponent)
   },
+
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./pages/login/login').then(m => m.LoginComponent)
+  },
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./pages/register/register').then(m => m.RegisterComponent)
+  },
+
   {
     path: 'admin',
     canActivate: [adminGuard], // ← trebuie să fii admin

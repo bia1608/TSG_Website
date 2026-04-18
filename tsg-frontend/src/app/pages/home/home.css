@@ -1,0 +1,47 @@
+.home {
+  display: flex;
+  gap: 1rem; /* Spațiu între butoane */
+  justify-content: center; /* Centrează butoanele pe orizontală */
+  align-items: center; /* Centrează pe verticală (dacă are înălțime) */
+  padding: 2rem;
+  min-height: 200px; /* Opțional, pentru context */
+}
+
+/* Stiluri comune pentru ambele butoane */
+.btn-primary,
+.btn-secondary {
+  text-decoration: none; /* Scoate sublinierea de link */
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px; /* Colțuri rotunjite */
+  font-weight: 600;
+  font-family: sans-serif;
+  transition: all 0.3s ease; /* Animație fină la hover */
+  display: inline-block;
+  cursor: pointer;
+}
+
+/* Butonul Principal (Register) */
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+  border: 2px solid #007bff;
+}
+
+  .btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    transform: translateY(-2px); /* Efect de ridicare */
+  }
+
+/* Butonul Secundar (About) */
+.btn-secondary {
+  background-color: transparent;
+  color: #007bff;
+  border: 2px solid #007bff;
+}
+
+  .btn-secondary:hover {
+    background-color: #f0f7ff;
+    color: #0056b3;
+    border-color: #0056b3;
+  }

@@ -1,0 +1,199 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(15, 15, 26, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid #1e1e3a;
+  height: 64px;
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-logo {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #e94560;
+  text-decoration: none;
+  letter-spacing: 4px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+  .nav-links a {
+    color: #94a3b8;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+  }
+
+    .nav-links a:hover {
+      color: #fff;
+    }
+
+    /* Link activ — sublinie roșie */
+    .nav-links a.active {
+      color: #fff;
+      position: relative;
+    }
+
+      .nav-links a.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 14px;
+        right: 14px;
+        height: 2px;
+        background: #e94560;
+        border-radius: 2px;
+      }
+
+/* Link admin — discret */
+.link-admin {
+  color: #6b7280 !important;
+  font-size: 0.85rem !important;
+}
+
+/* Buton Login — evidențiat */
+.btn-login {
+  background: #e94560 !important;
+  color: #fff !important;
+  font-weight: 600;
+  padding: 8px 20px !important;
+  border-radius: 6px;
+  transition: opacity 0.2s !important;
+}
+
+  .btn-login:hover {
+    opacity: 0.85;
+  }
+
+/* Buton logout */
+.btn-logout {
+  background: transparent;
+  border: 1px solid #2a2a4a;
+  color: #6b7280;
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+  .btn-logout:hover {
+    border-color: #e94560;
+    color: #e94560;
+  }
+
+/* Divider mobil */
+.divider {
+  display: none;
+}
+
+/* Hamburger */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+
+  .hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: #94a3b8;
+    border-radius: 2px;
+    transition: all 0.3s;
+  }
+
+  /* Animație hamburger → X */
+  .hamburger.open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .hamburger.open span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .hamburger.open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+/* ── MOBIL ─────────────────────────────────── */
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+
+  .nav-links {
+    display: none;
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    background: #0f0f1a;
+    border-bottom: 1px solid #2a2a4a;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px 24px 24px;
+    gap: 4px;
+    z-index: 99;
+  }
+
+    .nav-links.open {
+      display: flex;
+    }
+
+    .nav-links a {
+      padding: 14px 8px;
+      font-size: 1rem;
+      border-bottom: 1px solid #1e1e3a;
+    }
+
+      .nav-links a.active::after {
+        display: none;
+      }
+
+  .divider {
+    display: block;
+    height: 1px;
+    background: #2a2a4a;
+    margin: 8px 0;
+  }
+
+  .btn-login {
+    display: block;
+    text-align: center;
+    margin-top: 8px;
+  }
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 98;
+}
