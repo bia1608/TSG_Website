@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TSG_Website.Data;
+using TSG_Website.Models;
 
 namespace TSG_Website.Controllers
 {
@@ -17,51 +19,58 @@ namespace TSG_Website.Controllers
         [HttpGet]
         public async Task<IActionResult> GetArticles()
         {
-            var blogs = await _context.Blogs.ToListAsync();
-            return Ok(blogs);
+            var posts = await _context.BlogPosts.ToListAsync();
+            return Ok(posts);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetArticle(int id)
         {
-            var blog = await _context.Blogs.FindAsync(id);
-            if (blog == null)
+            var post = await _context.BlogPosts.FindAsync(id);
+            if (post == null)
             {
                 return NotFound();
             }
-            return Ok(blog);
+            return Ok(post);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateArticle([FromBody] Blog blog)
+        public async Task<IActionResult> CreateArticle([FromBody] BlogPost post)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            _context.Blogs.Add(blog);
+
+            post.CreatedAt = DateTime.UtcNow;
+            post.UpdatedAt = DateTime.UtcNow;
+
+            _context.BlogPosts.Add(post);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetArticle), new { id = blog.Id }, blog);
+            return CreatedAtAction(nameof(GetArticle), new { id = post.Id }, post);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateArticle(int id, [FromBody] Blog updatedBlog)
+        public async Task<IActionResult> UpdateArticle(int id, [FromBody] BlogPost updatedPost)
         {
-            if (id != updatedBlog.Id)
+            if (id != updatedPost.Id)
             {
                 return BadRequest();
             }
 
-            var blog = await _context.Blogs.FindAsync(id);
-            if (blog == null)
+            var post = await _context.BlogPosts.FindAsync(id);
+            if (post == null)
             {
                 return NotFound();
             }
 
-            blog.Title = updatedBlog.Title;
-            blog.Content = updatedBlog.Content;
-            blog.UpdatedAt = DateTime.UtcNow;
-            _context.Blogs.Update(blog);
+            post.Title = updatedPost.Title;
+            post.Content = updatedPost.Content;
+            post.ImageUrl = updatedPost.ImageUrl;
+            post.Status = updatedPost.Status;
+            post.PublishedAt = updatedPost.PublishedAt;
+            post.UpdatedAt = DateTime.UtcNow;
+            _context.BlogPosts.Update(post);
 
             await _context.SaveChangesAsync();
 
@@ -71,13 +80,13 @@ namespace TSG_Website.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteArticle(int id)
         {
-            var blog = await _context.Blogs.FindAsync(id);
-            if (blog == null)
+            var post = await _context.BlogPosts.FindAsync(id);
+            if (post == null)
             {
                 return NotFound();
             }
 
-            _context.Blogs.Remove(blog);
+            _context.BlogPosts.Remove(post);
             await _context.SaveChangesAsync();
             return NoContent();
         }
