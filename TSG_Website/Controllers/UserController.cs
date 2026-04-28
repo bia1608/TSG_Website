@@ -70,5 +70,15 @@ namespace TSG_Website.Controllers
 
             return Ok(new { message = "Parola schimbat?." });
         }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteAccount()
+        {
+
+        }
+
+        [HttpDelete("{id}/delete")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult>
     }
 }
