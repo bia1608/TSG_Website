@@ -71,14 +71,48 @@ namespace TSG_Website.Controllers
             return Ok(new { message = "Parola schimbat?." });
         }
 
-        [HttpDelete]
+        [HttpDelete("me")]
         public async Task<IActionResult> DeleteAccount()
         {
+            var user = await _db.Users.FindAsync(GetUserId());
+            if (user == null) return NotFound();
 
+            _db.Users.Remove(user);
+            await _db.SaveChangesAsync();
+            return Ok(new { message = "Contul a fost șters cu succes." });
         }
 
         [HttpDelete("{id}/delete")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult>
+        public async Task<IActionResult> DeleteUserAccount(Guid id)
+        {
+            var user = await _db.Users.FindAsync(id);
+            if (user == null) return NotFound();
+
+            _db.Users.Remove(user);
+            await _db.SaveChangesAsync();
+            return Ok(new { message = "Contul de utilizator a fost șters cu succes." });
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = await _db.Users
+                .Select(u => new
+                {
+                    u.Id,
+                    u.FirstName,
+                    u.LastName,
+                    u.Email,
+                    u.Bio,
+                    u.LinkedInUrl,
+                    u.PhoneNumber,
+                    u.IsAdmin,
+                    u.IsActive
+                })
+                .ToListAsync();
+            return Ok(users);
+        }
     }
 }

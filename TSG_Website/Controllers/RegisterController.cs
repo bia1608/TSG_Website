@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TSG_Website.Data;
 using TSG_Website.DTOs;
 using TSG_Website.Models;
@@ -41,45 +42,21 @@ namespace TSG_Website.Controllers
 
             _context.Registrations.Add(registration);
             await _context.SaveChangesAsync();
+
+            // Trimite mailul de confirmare a primirii înscrierii
+            await _emailService.SendRegistrationConfirmationAsync(registration.Email, registration.FirstName + " " + registration.LastName);
+
             return Ok(registration);
         }
 
-        [HttpPost("{id}/process")]
-        public async Task<IActionResult> AcceptUser(int id)
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllRegistrations()
         {
-            var registration = await _context.Registrations.FindAsync(id);
-            if (registration == null)
-                return NotFound();
-
-            string password = GenerateRandomPassword();
-            string hash = BCrypt.Net.BCrypt.HashPassword(password);
-
-            var user = new User
-            {
-                Email = registration.Email,
-                PasswordHash = hash,
-                IsActive = true,
-                IsAdmin = false,
-                FirstName = registration.FirstName,
-                LastName = registration.LastName,
-                PhoneNumber = registration.PhoneNumber
-            };
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            await _emailService.SendWelcomeEmailAsync(user.Email, registration.FirstName, password);
-            return Ok(new { message = "User created successfully" });
-        }
-
-        private static string GenerateRandomPassword()
-        {
-            const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789@#$!";
-            var rng = new Random();
-            var pwd = new char[12];
-            for (int i = 0; i < 12; i++)
-                pwd[i] = chars[rng.Next(chars.Length)];
-            return new string(pwd);
+            var registrations = await _context.Registrations
+                .OrderByDescending(r => r.SubmittedAt)
+                .ToListAsync();
+            return Ok(registrations);
         }
     }
 }

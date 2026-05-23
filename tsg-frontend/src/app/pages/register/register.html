@@ -1,26 +1,106 @@
-<div class="register-page">
-  <h2>Alătură-te echipei TSG</h2>
-  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <label>Prenume:</label>
-      <input type="text" formControlName="firstName">
-    </div>
+<div class="register-container">
+  <div class="glass-card">
+    @if (success) {
+      <div class="success-screen">
+        <div class="success-icon">✓</div>
+        <h2>Înregistrare Reușită!</h2>
+        <p>Am primit cererea ta de înscriere în echipa TSG.</p>
+        <p class="sub-text">Un e-mail de confirmare a fost trimis la adresa introdusă de tine. Te vom anunța în curând despre stadiul aplicației tale!</p>
+        <button class="btn-primary" (click)="success = false">Trimite altă cerere</button>
+      </div>
+    } @else {
+      <div class="form-header">
+        <h2>Alătură-te echipei TSG</h2>
+        <p>Completează formularul de înscriere pentru a deveni membru al asociației noastre.</p>
+      </div>
 
-    <div class="form-group">
-      <label>Nume:</label>
-      <input type="text" formControlName="lastName">
-    </div>
+      @if (errorMsg) {
+        <div class="alert alert-danger">
+          {{ errorMsg }}
+        </div>
+      }
 
-    <div class="form-group">
-      <label>Email:</label>
-      <input type="email" formControlName="email">
-    </div>
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName">Prenume</label>
+            <input 
+              id="firstName"
+              type="text" 
+              formControlName="firstName" 
+              placeholder="Ex: Andrei"
+              [class.error-input]="registerForm.get('firstName')?.touched && registerForm.get('firstName')?.invalid"
+            >
+            @if (registerForm.get('firstName')?.touched && registerForm.get('firstName')?.invalid) {
+              <span class="error-text">Prenumele este obligatoriu (minim 2 caractere).</span>
+            }
+          </div>
 
-    <div class="form-group">
-      <label>Telefon:</label>
-      <input type="tel" formControlName="phoneNumber">
-    </div>
+          <div class="form-group">
+            <label for="lastName">Nume</label>
+            <input 
+              id="lastName"
+              type="text" 
+              formControlName="lastName" 
+              placeholder="Ex: Popescu"
+              [class.error-input]="registerForm.get('lastName')?.touched && registerForm.get('lastName')?.invalid"
+            >
+            @if (registerForm.get('lastName')?.touched && registerForm.get('lastName')?.invalid) {
+              <span class="error-text">Numele este obligatoriu (minim 2 caractere).</span>
+            }
+          </div>
+        </div>
 
-    <button type="submit" [disabled]="!registerForm.valid">Trimite Cererea</button>
-  </form>
+        <div class="form-group">
+          <label for="email">Adresă de Email</label>
+          <input 
+            id="email"
+            type="email" 
+            formControlName="email" 
+            placeholder="Ex: popescu@gmail.com"
+            [class.error-input]="registerForm.get('email')?.touched && registerForm.get('email')?.invalid"
+          >
+          @if (registerForm.get('email')?.touched && registerForm.get('email')?.invalid) {
+            <span class="error-text">Te rugăm să introduci o adresă de email validă.</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="phoneNumber">Număr de Telefon</label>
+          <input 
+            id="phoneNumber"
+            type="tel" 
+            formControlName="phoneNumber" 
+            placeholder="Ex: 0722123456"
+            [class.error-input]="registerForm.get('phoneNumber')?.touched && registerForm.get('phoneNumber')?.invalid"
+          >
+          @if (registerForm.get('phoneNumber')?.touched && registerForm.get('phoneNumber')?.invalid) {
+            <span class="error-text">Te rugăm să introduci un număr de telefon valid.</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="cvUrl">Link către CV (Google Drive, Dropbox, LinkedIn, etc.)</label>
+          <input 
+            id="cvUrl"
+            type="text" 
+            formControlName="cvUrl" 
+            placeholder="Ex: https://drive.google.com/... sau link-ul tău"
+            [class.error-input]="registerForm.get('cvUrl')?.touched && registerForm.get('cvUrl')?.invalid"
+          >
+          @if (registerForm.get('cvUrl')?.touched && registerForm.get('cvUrl')?.invalid) {
+            <span class="error-text">Te rugăm să introduci un URL valid pentru CV.</span>
+          }
+        </div>
+
+        <button type="submit" class="btn-submit" [disabled]="loading || registerForm.invalid">
+          @if (loading) {
+            <span class="spinner"></span> Se trimite...
+          } @else {
+            Trimite Cererea
+          }
+        </button>
+      </form>
+    }
+  </div>
 </div>

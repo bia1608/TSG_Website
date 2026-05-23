@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -98,9 +98,9 @@ namespace TSG_Website.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CreateArticle([FromBody] CreateBlogPostDto post)
+        public async Task<IActionResult> CreateArticle([FromBody] CreateBlogPostDto dto)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(userIdStr, out var userId))
                 return Unauthorized();
 

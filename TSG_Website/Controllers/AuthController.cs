@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -41,12 +41,17 @@ namespace TSG_Website.Controllers
             }
 
             var token = GenerateToken(user);
-            return Ok(new { token, user.Email });
+            return Ok(new { 
+                token, 
+                email = user.Email, 
+                role = user.IsAdmin ? "Admin" : "User", 
+                firstName = user.FirstName 
+            });
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPost("{id}/process")]
-        public async Task<IActionResult> Process(int id, [FromBody] ProcessRegistrationDto dto)
+        public async Task<IActionResult> Process(Guid id, [FromBody] ProcessRegistrationDto dto)
         {
             var reg = await _context.Registrations.FindAsync(id);
             if (reg == null) 
@@ -82,7 +87,11 @@ namespace TSG_Website.Controllers
             // Handle rejection case
             reg.Status = RegistrationStatus.Rejected;
             await _context.SaveChangesAsync();
-            return Ok(new { message = "Înregistrarea a fost respingă." });
+
+            // Trimite mail de respingere cu motivul specificat
+            await _emailService.SendRegistrationRejectedAsync(reg.Email, (reg.FirstName + " " + reg.LastName), dto.RejectionReason);
+
+            return Ok(new { message = "Înregistrarea a fost respinsă." });
         }
 
         private static string GeneratePassword()
@@ -102,9 +111,10 @@ namespace TSG_Website.Controllers
 
             var claims = new[]
             {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email)
-        };
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.IsAdmin ? "Admin" : "User")
+            };
 
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],

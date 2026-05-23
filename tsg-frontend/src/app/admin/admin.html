@@ -1,1 +1,327 @@
-<p>admin works!</p>
+<div class="admin-container">
+  <div class="admin-sidebar">
+    <div class="logo-area">
+      <h2>TSG Admin</h2>
+      <p>Panou de Control</p>
+    </div>
+    <nav class="admin-nav">
+      <button 
+        [class.active]="activeTab === 'registrations'" 
+        (click)="activeTab = 'registrations'"
+      >
+        <span class="nav-icon">📝</span> Înscrieri
+        @if (getPendingRegistrations().length > 0) {
+          <span class="badge">{{ getPendingRegistrations().length }}</span>
+        }
+      </button>
+      <button 
+        [class.active]="activeTab === 'members'" 
+        (click)="activeTab = 'members'"
+      >
+        <span class="nav-icon">👥</span> Membri Activi
+      </button>
+      <button 
+        [class.active]="activeTab === 'analytics'" 
+        (click)="activeTab = 'analytics'"
+      >
+        <span class="nav-icon">📊</span> Analytics
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-refresh" (click)="loadData()" [disabled]="loading">
+        🔄 Reîncarcă Datele
+      </button>
+    </div>
+  </div>
+
+  <div class="admin-main">
+    @if (loading) {
+      <div class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Se încarcă datele...</p>
+      </div>
+    }
+
+    <!-- TAB: REGISTRATIONS -->
+    @if (activeTab === 'registrations') {
+      <div class="tab-content">
+        <div class="content-header">
+          <h1>Gestionare Înscrieri</h1>
+          <p>Gestionează cererile de aderare la asociația TSG și generează automat conturi.</p>
+        </div>
+
+        <!-- PENDING REGISTRATIONS -->
+        <div class="content-card">
+          <h3>Cereri în Așteptare ({{ getPendingRegistrations().length }})</h3>
+          
+          @if (getPendingRegistrations().length === 0) {
+            <div class="empty-state">
+              <span class="empty-icon">🎉</span>
+              <p>Nu există cereri noi în așteptare. Toate înscrierile au fost procesate!</p>
+            </div>
+          } @else {
+            <div class="table-responsive">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Nume Participant</th>
+                    <th>Email</th>
+                    <th>Telefon</th>
+                    <th>Curriculum Vitae</th>
+                    <th>Dată Înscriere</th>
+                    <th class="actions-col">Acțiuni</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (reg of getPendingRegistrations(); track reg.id) {
+                    <tr>
+                      <td class="name-cell">
+                        <strong>{{ reg.lastName }} {{ reg.firstName }}</strong>
+                      </td>
+                      <td>{{ reg.email }}</td>
+                      <td>{{ reg.phoneNumber }}</td>
+                      <td>
+                        <a [href]="reg.cvUrl" target="_blank" class="cv-link">
+                          📎 Vezi CV
+                        </a>
+                      </td>
+                      <td>{{ reg.submittedAt | date:'dd.MM.yyyy HH:mm' }}</td>
+                      <td class="actions-cell">
+                        <button 
+                          class="btn-accept" 
+                          (click)="acceptRegistration(reg.id)"
+                          [disabled]="processingId === reg.id"
+                        >
+                          @if (processingId === reg.id) {
+                            <span class="mini-spinner"></span>
+                          } @else {
+                            Acceptă
+                          }
+                        </button>
+                        <button 
+                          class="btn-reject" 
+                          (click)="openRejectModal(reg.id)"
+                          [disabled]="processingId === reg.id"
+                        >
+                          Respinge
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+
+        <!-- PROCESSED REGISTRATIONS -->
+        <div class="content-card history-card">
+          <h3>Istoric Înscrieri Procesate</h3>
+          
+          @if (getProcessedRegistrations().length === 0) {
+            <div class="empty-state">
+              <p>Nicio înscriere nu a fost procesată până acum.</p>
+            </div>
+          } @else {
+            <div class="table-responsive">
+              <table class="admin-table mini-table">
+                <thead>
+                  <tr>
+                    <th>Nume</th>
+                    <th>Email</th>
+                    <th>Dată Aplicare</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (reg of getProcessedRegistrations(); track reg.id) {
+                    <tr>
+                      <td>{{ reg.lastName }} {{ reg.firstName }}</td>
+                      <td>{{ reg.email }}</td>
+                      <td>{{ reg.submittedAt | date:'dd.MM.yyyy' }}</td>
+                      <td>
+                        <span class="status-badge" [class]="reg.status.toLowerCase()">
+                          {{ reg.status === 'Accepted' ? 'Acceptat' : 'Respins' }}
+                        </span>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- TAB: MEMBERS -->
+    @if (activeTab === 'members') {
+      <div class="tab-content">
+        <div class="content-header">
+          <h1>Membri Activi și Conturi</h1>
+          <p>Vizualizează toți membrii asociației TSG care au un cont activ în platformă.</p>
+        </div>
+
+        <div class="content-card">
+          <h3>Lista Membrilor ({{ users.length }})</h3>
+          
+          @if (users.length === 0) {
+            <div class="empty-state">
+              <p>Nu există membri înregistrați în baza de date.</p>
+            </div>
+          } @else {
+            <div class="table-responsive">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Nume Complet</th>
+                    <th>Email</th>
+                    <th>Telefon</th>
+                    <th>Biografie</th>
+                    <th>LinkedIn</th>
+                    <th>Rol</th>
+                    <th>Acțiuni</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (user of users; track user.id) {
+                    <tr>
+                      <td class="name-cell">
+                        <strong>{{ user.lastName }} {{ user.firstName }}</strong>
+                      </td>
+                      <td>{{ user.email }}</td>
+                      <td>{{ user.phoneNumber || '-' }}</td>
+                      <td class="bio-cell" [title]="user.bio">{{ user.bio }}</td>
+                      <td>
+                        @if (user.linkedInUrl) {
+                          <a [href]="user.linkedInUrl" target="_blank" class="linkedin-link">LinkedIn</a>
+                        } @else {
+                          -
+                        }
+                      </td>
+                      <td>
+                        <span class="role-badge" [class.admin]="user.isAdmin">
+                          {{ user.isAdmin ? 'Admin' : 'User' }}
+                        </span>
+                      </td>
+                      <td>
+                        @if (!user.isAdmin) {
+                          <button class="btn-delete-user" (click)="deleteUser(user.id)">
+                            Șterge Cont
+                          </button>
+                        } @else {
+                          <span class="system-tag">Protejat</span>
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- TAB: ANALYTICS -->
+    @if (activeTab === 'analytics') {
+      <div class="tab-content">
+        <div class="content-header">
+          <h1>Analytics & Rapoarte</h1>
+          <p>Statistici în timp real pe baza răspunsurilor și înscrierilor din baza de date.</p>
+        </div>
+
+        <!-- STATS GRID -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon purple">📝</div>
+            <div class="stat-info">
+              <h3>Total Înscrieri</h3>
+              <p class="stat-value">{{ totalRegistrations }}</p>
+              <p class="stat-sub">Candidaturi primite</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon green">📈</div>
+            <div class="stat-info">
+              <h3>Rată de Acceptare</h3>
+              <p class="stat-value">{{ acceptanceRate }}%</p>
+              <div class="progress-bar-container">
+                <div class="progress-bar" [style.width.%]="acceptanceRate"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon yellow">⏳</div>
+            <div class="stat-info">
+              <h3>În Așteptare</h3>
+              <p class="stat-value">{{ pendingCount }}</p>
+              <p class="stat-sub">Necesită procesare</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon blue">👥</div>
+            <div class="stat-info">
+              <h3>Membri Activi</h3>
+              <p class="stat-value">{{ users.length }}</p>
+              <p class="stat-sub">Conturi utilizatori</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- METRIC DETAILED CARD -->
+        <div class="content-card detail-analytics-card">
+          <h3>Raport Detaliat Răspunsuri</h3>
+          <div class="details-chart-placeholder">
+            <div class="chart-bar-group">
+              <div class="chart-label">Acceptați ({{ acceptedCount }})</div>
+              <div class="chart-track">
+                <div class="chart-fill accepted" [style.width.%]="totalRegistrations > 0 ? (acceptedCount / totalRegistrations * 100) : 0"></div>
+              </div>
+            </div>
+
+            <div class="chart-bar-group">
+              <div class="chart-label">Respinși ({{ rejectedCount }})</div>
+              <div class="chart-track">
+                <div class="chart-fill rejected" [style.width.%]="totalRegistrations > 0 ? (rejectedCount / totalRegistrations * 100) : 0"></div>
+              </div>
+            </div>
+
+            <div class="chart-bar-group">
+              <div class="chart-label">În Așteptare ({{ pendingCount }})</div>
+              <div class="chart-track">
+                <div class="chart-fill pending" [style.width.%]="totalRegistrations > 0 ? (pendingCount / totalRegistrations * 100) : 0"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- REJECT MODAL -->
+@if (showRejectModal) {
+  <div class="modal-backdrop">
+    <div class="modal-card">
+      <h3>Respingere Candidatură</h3>
+      <p>Te rugăm să introduci motivul respingerii înscrierii. Acesta va fi trimis prin e-mail candidatului.</p>
+      
+      <div class="form-group">
+        <textarea 
+          placeholder="Ex: Cerințele de experiență nu sunt îndeplinite... sau Lasă gol pentru respingere generică."
+          [(ngModel)]="rejectionReason"
+          rows="4"
+        ></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="closeRejectModal()">Anulează</button>
+        <button class="btn-confirm-reject" (click)="submitRejection()">Respinge Înscrierea</button>
+      </div>
+    </div>
+  </div>
+}
